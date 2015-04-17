@@ -22,5 +22,16 @@
   "bugs": {
     "url": "https://github.com/creatorrr/spm/issues"
   },
-  "homepage": "https://github.com/creatorrr/spm"
+  "homepage": "https://github.com/creatorrr/spm",
+  "dependencies": {
+    "arboreal": "git://github.com/creatorrr/arboreal.git",
+    "browserify-zlib": "^0.1.4",
+    "co": "^4.5.1",
+    "highland": "^2.4.0",
+    "oboe": "^2.1.1",
+    "semver": "^4.3.3",
+    "serviceworker-cache-polyfill": "^3.0.0",
+    "tar": "^2.1.0",
+    "when": "^3.7.2"
+  }
 }
