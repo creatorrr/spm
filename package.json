@@ -4,6 +4,8 @@
   "description": "A npm-style serviceWorker package manager",
   "main": "index.js",
   "scripts": {
+    "build": "./node_modules/.bin/gulp build",
+    "transpile": "./node_modules/.bin/gulp transpile",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -33,5 +35,16 @@
     "serviceworker-cache-polyfill": "^3.0.0",
     "tar": "^2.1.0",
     "when": "^3.7.2"
+  },
+  "devDependencies": {
+    "babelify": "^6.0.2",
+    "browserify": "^9.0.8",
+    "envify": "^3.4.0",
+    "exorcist": "^0.1.6",
+    "gulp": "^3.8.11",
+    "gulp-babel": "^5.1.0",
+    "mkdirp": "^0.5.0",
+    "rimraf": "^2.3.2",
+    "uglifyify": "^3.0.1"
   }
 }
