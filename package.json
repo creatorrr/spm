@@ -30,6 +30,7 @@
     "browserify-zlib": "^0.1.4",
     "co": "^4.5.1",
     "highland": "^2.4.0",
+    "lodash": "^3.7.0",
     "oboe": "^2.1.1",
     "semver": "^4.3.3",
     "serviceworker-cache-polyfill": "^3.0.0",
