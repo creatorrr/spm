@@ -26,7 +26,8 @@
   },
   "homepage": "https://github.com/creatorrr/spm",
   "dependencies": {
-    "arboreal": "git://github.com/creatorrr/arboreal.git",
+    "ampersand-state": "^4.5.3",
+    "arboreal": "git://github.com/creatorrr/arboreal.git#02cac9b37f3540799989ce78fd76886067871d7d",
     "browserify-zlib": "^0.1.4",
     "co": "^4.5.1",
     "highland": "^2.4.0",

@@ -1,18 +1,15 @@
 import co from "co";
 import { EventEmitter } from "events";
 
-import Package from "./package";
+import Config from "./config";
 import { getJSON } from "./utils";
-
-// GLOBALS
-const
-  CONFIG_FILE = "package.json";
+import Package from "./package";
 
 class SPM extends EventEmitter {
-  constructor (registries=[]) {
+  constructor () {
     super();
 
-    this.registries = registries;
+    this.config = new Config;
     this._currentPackage = null;
   }
 
@@ -47,6 +44,7 @@ class SPM extends EventEmitter {
 
   *_loadPackage (rootUrl) {
     let
+      {CONFIG_FILE} = this.config,
       url = `${ rootUrl }/${ CONFIG_FILE }`,
       pkg = yield getJSON(url);
 
