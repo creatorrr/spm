@@ -4,7 +4,7 @@ import map from "lodash/collection/map";
 import zipObject from "lodash/array/zipObject";
 
 import Config from "./config";
-import { getJSON, getJSONProp } from "./utils";
+import { getJSONProp } from "./utils";
 import Package from "./package";
 
 class SPM extends EventEmitter {
@@ -12,16 +12,15 @@ class SPM extends EventEmitter {
     super();
 
     this.config = new Config(config);
-    this._currentPackage = null;
+    this._currentPackage = new Package;
+
+    // Forward load event
+    this._currentPackage.on("load", this.emit.bind(this, "load"));
   }
 
   // Getters & setters
   get currentPackage () {
-    if (this._currentPackage === null)
-      throw Error("No package loaded");
-
-    else
-      return this._currentPackage.toJSON();
+    return this._currentPackage.toJSON();
   }
 
   // Public methods
@@ -38,18 +37,14 @@ class SPM extends EventEmitter {
   }
 
   load (rootUrl="") {
-    return co(
-      this._loadPackage.bind(this, rootUrl)
+    let
+      {CONFIG_FILE} = this.config,
+      url = `${ rootUrl }/${ CONFIG_FILE }`;
 
-    ).then(
-      pkg => {
-        this._setPackage(pkg);
-        this.emit("load", pkg);
-      }
-
-    ).catch(
-      this.emit.bind(this, "error")
-    );
+    return this._currentPackage.load(url)
+      .catch(
+        this.emit.bind(this, "error")
+      );
   }
 
   // Private methods
@@ -61,19 +56,6 @@ class SPM extends EventEmitter {
       });
 
     return yield zipObject(registries, versions);
-  }
-
-  *_loadPackage (rootUrl) {
-    let
-      {CONFIG_FILE} = this.config,
-      url = `${ rootUrl }/${ CONFIG_FILE }`,
-      pkg = yield getJSON(url);
-
-    return pkg;
-  }
-
-  _setPackage (pkg) {
-    this._currentPackage = new Package(pkg);
   }
 }
 
