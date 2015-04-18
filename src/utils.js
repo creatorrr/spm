@@ -1,4 +1,8 @@
+import filter from "lodash/collection/filter";
 import oboe from "oboe";
+import reduce from "lodash/collection/reduce";
+import semver from "semver";
+import sort from "lodash/collection/sortBy";
 
 const
   getJSON = url => {
@@ -27,9 +31,22 @@ const
         })
         .fail(reject);
     });
+  },
+
+  checkVersion = condition =>
+    v => semver.satisfies(v, condition),
+
+  getSatisfactoryVersion = (condition, versions=[]) => {
+    let
+      candidates = filter(versions, checkVersion(condition)),
+      sorted = sort(candidates),
+      highestVersion = reduce(sorted, (v1, v2) => semver.gt(v1, v2) ? v1 : v2);
+
+    return highestVersion;
   };
 
 export {
   getJSON,
-  getJSONProp
+  getJSONProp,
+  getSatisfactoryVersion
 };
