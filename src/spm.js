@@ -1,10 +1,8 @@
 import co from "co";
 import { EventEmitter } from "events";
-import map from "lodash/collection/map";
-import zipObject from "lodash/array/zipObject";
 
 import Config from "./config";
-import { getJSONProp } from "./utils";
+import { getJSONProp, getVersions } from "./utils";
 import Package from "./package";
 
 class SPM extends EventEmitter {
@@ -29,7 +27,7 @@ class SPM extends EventEmitter {
       throw new Error("No package name passed");
 
     return co(
-      this._getVersions.bind(this, pkgName)
+      getVersions.bind(null, pkgName, this.config.registries)
 
     ).catch(
       this.emit.bind(this, "error")
@@ -45,17 +43,6 @@ class SPM extends EventEmitter {
       .catch(
         this.emit.bind(this, "error")
       );
-  }
-
-  // Private methods
-  *_getVersions (pkgName) {
-    let
-      {registries} = this.config,
-      versions = map(registries, registry => {
-        return getJSONProp(`${ registry }/${ pkgName }`, "versions")
-      });
-
-    return yield zipObject(registries, versions);
   }
 }
 

@@ -1,8 +1,10 @@
 import filter from "lodash/collection/filter";
+import map from "lodash/collection/map";
 import oboe from "oboe";
 import reduce from "lodash/collection/reduce";
 import semver from "semver";
 import sort from "lodash/collection/sortBy";
+import zipObject from "lodash/array/zipObject";
 
 const
   getJSON = url => {
@@ -43,10 +45,20 @@ const
       highestVersion = reduce(sorted, (v1, v2) => semver.gt(v1, v2) ? v1 : v2);
 
     return highestVersion;
-  };
+  },
+
+  getVersions = function* (pkgName, registries=[]) {
+    let
+      versions = map(registries, registry =>
+        getJSONProp(`${ registry }/${ pkgName }`, "versions")
+      );
+
+    return yield zipObject(registries, versions);
+  }
 
 export {
   getJSON,
   getJSONProp,
-  getSatisfactoryVersion
+  getSatisfactoryVersion,
+  getVersions
 };
