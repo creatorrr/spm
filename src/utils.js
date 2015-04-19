@@ -38,7 +38,7 @@ const
   checkVersion = condition =>
     v => semver.satisfies(v, condition),
 
-  getSatisfactoryVersion = (condition, versions=[]) => {
+  findSatisfactoryVersion = (condition, versions=[]) => {
     let
       candidates = filter(versions, checkVersion(condition)),
       sorted = sort(candidates),
@@ -54,11 +54,11 @@ const
       );
 
     return yield zipObject(registries, versions);
-  }
+  };
 
 export {
   getJSON,
   getJSONProp,
-  getSatisfactoryVersion,
+  findSatisfactoryVersion,
   getVersions
 };
