@@ -35,14 +35,18 @@ const
     });
   },
 
-  checkVersion = condition =>
-    v => semver.satisfies(v, condition),
+  flip = f =>
+    (a, b) => f(b, a),
+
+  checkVersion = flip(semver.satisfies),
 
   findSatisfactoryVersion = (condition, versions=[]) => {
     let
-      candidates = filter(versions, checkVersion(condition)),
+      candidates = filter(versions, checkVersion.bind(null, condition)),
       sorted = sort(candidates),
       highestVersion = reduce(sorted, (v1, v2) => semver.gt(v1, v2) ? v1 : v2);
+
+    console.log(candidates,sorted,highestVersion);
 
     return highestVersion;
   },
@@ -57,8 +61,10 @@ const
   };
 
 export {
+  checkVersion,
+  findSatisfactoryVersion,
+  flip,
   getJSON,
   getJSONProp,
-  findSatisfactoryVersion,
   getVersions
 };

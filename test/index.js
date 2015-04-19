@@ -3,5 +3,5 @@ require("babel/register");
 
 // Require tests
 module.exports = {
-  // "testName": require("./testPath"),
+  "testUtils": require("./testUtils")
 };
