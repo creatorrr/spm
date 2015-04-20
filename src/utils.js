@@ -42,11 +42,14 @@ const
 
   findSatisfactoryVersion = (condition, versions=[]) => {
     let
-      candidates = filter(versions, checkVersion.bind(null, condition)),
-      sorted = sort(candidates),
-      highestVersion = reduce(sorted, (v1, v2) => semver.gt(v1, v2) ? v1 : v2);
-
-    console.log(candidates,sorted,highestVersion);
+      candidates = filter(
+        versions,
+        checkVersion.bind(null, condition)
+      ),
+      highestVersion = reduce(
+        sort(candidates),
+        (v1, v2) => semver.gt(v1, v2) ? v1 : v2
+      );
 
     return highestVersion;
   },

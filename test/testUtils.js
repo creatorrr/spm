@@ -1,10 +1,10 @@
-import originalOboe from "oboe";
 import rewire from "rewire";
 
+import { mockOboe } from "./mocks";
 const utils = rewire("../src/utils");
 
-export default function testUtils ({deepEqual, done, equal, expect}) {
-  expect(2);
+export default function testUtils ({deepEqual, done, equal, expect, ifError, ok}) {
+  expect(4);
 
   let
     {flip, findSatisfactoryVersion} = utils;
@@ -21,5 +21,30 @@ export default function testUtils ({deepEqual, done, equal, expect}) {
     "1.1.9"
   );
 
-  done();
+  // Mock module
+  utils.__set__({
+    oboe: mockOboe
+  });
+
+  let
+    {getJSON, getJSONProp} = utils,
+
+    tests = [
+      // getJSON fetches json as obj
+      getJSON("http://registry.npmjs.org/co")
+        .then(({name}) => {
+          ok(name);
+        })
+        .catch(ifError),
+
+      // getJSONProp fetches a particular prop from json
+      getJSONProp("http://registry.npmjs.org/co", "name")
+        .then((name) => {
+          ok(name);
+        })
+        .catch(ifError)
+    ];
+
+  Promise.all(tests)
+    .then(() => done());
 }
