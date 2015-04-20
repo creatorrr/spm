@@ -2,5 +2,4 @@
   • Add tarball unpacker
   • Add package manager opts
   • Add cache manager
-  • Add tests
   • Change Arboreal child calls to this.constructor

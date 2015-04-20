@@ -6,26 +6,33 @@ import pick from "lodash/object/pick";
 import semver from "semver";
 
 class Package extends EventEmitter {
-  constructor (config={}) {
+  constructor (config) {
     super();
 
     // Init params
-    this.init(config);
+    this._initialized = false;
+    if (config)
+      this.init(config);
 
     // Check package on load
-    this.on("load", () => {
+    this.on("init", () => {
       if (!this.isValid())
         throw new Error("Invalid package");
     });
   }
 
   init (config) {
+    // Don't allow multiple initializations
+    if (this._initialized)
+      throw new Error("Package already initialized");
+
     // Load props
     this._keys = Object.keys(config);
     assign(this, config);
 
     // Emit event
-    this.emit("load", config);
+    this._initialized = true;
+    this.emit("init", config);
     return this;
   }
 
@@ -38,7 +45,8 @@ class Package extends EventEmitter {
   }
 
   load (url) {
-    return co(this._load.bind(this, url));
+    return co(this._load.bind(this, url))
+      .then(this.init.bind(this));
   }
 
   toJSON () {
@@ -52,7 +60,7 @@ class Package extends EventEmitter {
       pkg = yield getJSON(url);
 
     // Init package
-    this.init(pkg);
+    this.emit("load", pkg);
     return pkg;
   }
 }
