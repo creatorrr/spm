@@ -16,9 +16,7 @@ const mkDependencyTree = (registries=[]) => {
   class DependencyTree extends Arboreal {
     constructor (parent, root, id) {
       // Set ID
-      id = id || (root && `node_modules/${ root.name }`);
-      id = parent ? `${ parent.id }/${ id }` : id;
-
+      id = DependencyTree.genId(root, parent);
       super(parent, root, id);
 
       // Build tree
@@ -32,10 +30,10 @@ const mkDependencyTree = (registries=[]) => {
         throw new Error("Tree already built");
 
       return co(this._loadDependencies.bind(this))
-        .catch(this.emit.bind(this, "error"))
         .then(deps => forEach(deps, this.appendChild.bind(this)))
         .then(() => this._built = true)
-        .then(this.emit.bind(this, "build"));
+        .then(this.emit.bind(this, "build"))
+        .catch(this.emit.bind(this, "error"));
     }
 
     *_loadDependencies () {
@@ -51,6 +49,15 @@ const mkDependencyTree = (registries=[]) => {
         );
 
       return loaded;
+    }
+
+    static genId ({name}, parent) {
+      let generated = "";
+
+      if (name)
+        generated = `node_modules/${ name }`;
+
+      return parent ? `${ parent.id }/${ generated }` : generated;
     }
 
     static *loadDependency (name, condition) {
