@@ -2,10 +2,10 @@ import assign from "lodash/object/assign";
 import Arboreal from "arboreal";
 import co from "co";
 import { EventEmitter } from "events";
-import filter from "lodash/collection/filter";
-import findIndex from "lodash/array/filter";
+import findIndex from "lodash/array/findIndex";
 import forEach from "lodash/collection/forEach";
 import { findSatisfactoryVersion, getVersions } from "./utils";
+import map from "lodash/collection/map";
 import mapValues from "lodash/object/mapValues";
 import pairs from "lodash/object/pairs";
 import sortBy from "lodash/collection/sortBy";
@@ -16,34 +16,35 @@ const mkDependencyTree = (registries=[]) => {
   class DependencyTree extends Arboreal {
     constructor (parent, root, id) {
       // Set ID
-      id = (parent ? parent.id + '/' : "") +
-        id || `node_modules/${ root.name }`;
+      id = id || (root && `node_modules/${ root.name }`);
+      id = parent ? `${ parent.id }/${ id }` : id;
 
       super(parent, root, id);
 
       // Build tree
-      this.buildTree();
+      this._built = false;
+      if (root)
+        this.buildTree();
     }
 
     buildTree () {
-      return co(this._buildTree.bind(this))
+      if (this._built)
+        throw new Error("Tree already built");
+
+      return co(this._loadDependencies.bind(this))
+        .catch(this.emit.bind(this, "error"))
+        .then(deps => forEach(deps, this.appendChild.bind(this)))
+        .then(() => this._built = true)
         .then(this.emit.bind(this, "build"));
-    }
-
-    *_buildTree () {
-      let deps = yield this._loadDependencies();
-      forEach(deps, this.appendChild);
-
-      return this;
     }
 
     *_loadDependencies () {
       let
         {dependencies} = this.data,
-        {_loadDependency} = this,
+        {loadDependency} = this.constructor,
 
-        // Make _loadDependency accept arrays
-        loader = _loadDependency.apply.bind(_loadDependency, this),
+        // Make loadDependency accept arrays
+        loader = loadDependency.apply.bind(loadDependency, null),
         loaded = yield map(
           pairs(dependencies),
           loader
@@ -52,15 +53,13 @@ const mkDependencyTree = (registries=[]) => {
       return loaded;
     }
 
-    *_loadDependency (name, condition) {
+    static *loadDependency (name, condition) {
       let
         allMatches = yield getVersions(name, registries),
         versionMap = mapValues(allMatches, Object.keys),
 
-        candidates = filter(
-          mapValues(
-            allMatches, findSatisfactoryVersion.bind(null, condition)
-          )
+        candidates = mapValues(
+          versionMap, findSatisfactoryVersion.bind(null, condition)
         ),
 
         versions = sortBy(
@@ -68,13 +67,13 @@ const mkDependencyTree = (registries=[]) => {
           ([registry]) => findIndex(registries, registry)
         ),
 
-        [registry, version] = versions.length ? versions : [];
+        [registry, version] = versions.length ? versions[0] : [];
 
       // Load package
       if (version) {
         let
           config = allMatches[registry][version],
-          pkg = yield new Package(config);
+          pkg = new Package(config);
 
         return pkg;
       }
@@ -84,7 +83,8 @@ const mkDependencyTree = (registries=[]) => {
     }
   };
 
-  return assign(DependencyTree.prototype, EventEmitter.prototype);
+  assign(DependencyTree.prototype, EventEmitter.prototype);
+  return DependencyTree;
 };
 
 export default mkDependencyTree;
