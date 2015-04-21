@@ -19,12 +19,19 @@ const mkDependencyTree = (registries=[]) => {
       id = DependencyTree.genId(root, parent);
       super(parent, root, id);
 
+      // Create promise
+      this._promise = new Promise((resolve, reject) => {
+        this.on("load", resolve);
+        this.on("error", reject);
+      });
+
       // Build tree
       this._built = false;
       if (root)
         this.buildTree();
     }
 
+    // Public methods
     buildTree () {
       if (this._built)
         throw new Error("Tree already built");
@@ -36,6 +43,11 @@ const mkDependencyTree = (registries=[]) => {
         .catch(this.emit.bind(this, "error"));
     }
 
+    promise () {
+      return this._promise;
+    }
+
+    // Private methods
     *_loadDependencies () {
       let
         {dependencies} = this.data,
@@ -51,6 +63,7 @@ const mkDependencyTree = (registries=[]) => {
       return loaded;
     }
 
+    // Static methods
     static genId ({name}, parent) {
       let generated = "";
 
@@ -90,7 +103,9 @@ const mkDependencyTree = (registries=[]) => {
     }
   };
 
+  // Mixin EventEmitter
   assign(DependencyTree.prototype, EventEmitter.prototype);
+
   return DependencyTree;
 };
 
