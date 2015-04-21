@@ -21,7 +21,7 @@ const mkDependencyTree = (registries=[]) => {
 
       // Create promise
       this._promise = new Promise((resolve, reject) => {
-        this.on("load", resolve);
+        this.on("build", resolve);
         this.on("error", reject);
       });
 
@@ -39,8 +39,8 @@ const mkDependencyTree = (registries=[]) => {
       return co(this._loadDependencies.bind(this))
         .then(deps => forEach(deps, this.appendChild.bind(this)))
         .then(() => this._built = true)
-        .then(this.emit.bind(this, "build"))
-        .catch(this.emit.bind(this, "error"));
+        .then(() => this.emit("build", this))
+        .catch(e => this.emit("error", e));
     }
 
     promise () {
