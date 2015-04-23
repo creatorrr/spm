@@ -8,6 +8,7 @@ import { findSatisfactoryVersion, getVersions } from "./utils";
 import map from "lodash/collection/map";
 import mapValues from "lodash/object/mapValues";
 import pairs from "lodash/object/pairs";
+import pluck from "lodash/collection/pluck";
 import sortBy from "lodash/collection/sortBy";
 
 import Package from "./package";
@@ -38,8 +39,12 @@ const mkDependencyTree = (registries=[]) => {
 
       return co(this._loadDependencies.bind(this))
         .then(deps => forEach(deps, this.appendChild.bind(this)))
-        .then(() => this._built = true)
-        .then(() => this.emit("build", this))
+        .then(() => {
+          // Wait for all children to resolve
+          Promise.all(pluck(this.children, "_promise"))
+            .then(() => this._built = true)
+            .then(() => this.emit("build", this))
+        })
         .catch(e => this.emit("error", e));
     }
 
