@@ -1,3 +1,7 @@
+// Polyfills
+import _fetch from "fetch";
+import _caches from "serviceworker-cache-polyfill";
+
 import co from "co";
 import { EventEmitter } from "events";
 

@@ -36,6 +36,7 @@
     "semver": "^4.3.3",
     "serviceworker-cache-polyfill": "^3.0.0",
     "tar": "^2.1.0",
+    "whatwg-fetch": "^0.7.0",
     "when": "^3.7.2"
   },
   "devDependencies": {
