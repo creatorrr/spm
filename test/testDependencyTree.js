@@ -5,7 +5,7 @@ import testData from "./data2";
 const mkDependencyTree = rewire("../src/dependencyTree");
 
 export default function testDependencyTree ({done, equal, expect, ifError, ok}) {
-  // expect(6);
+  expect(5);
 
   let
     registries = ["http://registry.npmjs.org"],

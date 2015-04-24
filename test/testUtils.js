@@ -4,10 +4,10 @@ import { mockOboe } from "./mocks";
 const utils = rewire("../src/utils");
 
 export default function testUtils ({deepEqual, done, equal, expect, ifError, ok}) {
-  expect(4);
+  expect(5);
 
   let
-    {flip, findSatisfactoryVersion} = utils;
+    {flip, findSatisfactoryVersion, setPath} = utils;
 
   // flip flips arguments
   deepEqual(
@@ -19,6 +19,19 @@ export default function testUtils ({deepEqual, done, equal, expect, ifError, ok}
   equal(
     findSatisfactoryVersion("<=1.2.0", ["0.1.0", "1.3.0", "1.1.9"]),
     "1.1.9"
+  );
+
+  // setPath sets a object value path to value
+  let obj = {a: {b: {c: 0}}};
+  setPath(
+    obj,
+    "a/b/c",
+    2
+  );
+
+  equal(
+    obj.a.b.c,
+    2
   );
 
   // Mock module

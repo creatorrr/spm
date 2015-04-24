@@ -1,4 +1,5 @@
 import filter from "lodash/collection/filter";
+import last from "lodash/array/last";
 import map from "lodash/collection/map";
 import oboe from "oboe";
 import reduce from "lodash/collection/reduce";
@@ -7,6 +8,21 @@ import sort from "lodash/collection/sortBy";
 import zipObject from "lodash/array/zipObject";
 
 const
+  removeTrailingSlash = str => str[str.length-1] == '/' ? str.slice(0,str.length-1) : str,
+  setPath = (obj, path, value) => {
+    let
+      p = removeTrailingSlash(path),
+      keys = p.split('/'),
+      setter = reduce(
+        keys.slice(0, keys.length-1),
+        (set, key) => set[key],
+        obj),
+      key = last(keys);
+
+    setter[key] = value;
+    return obj;
+  },
+
   getJSON = url => {
     return new Promise((resolve, reject) => {
       oboe(url)
@@ -69,5 +85,7 @@ export {
   flip,
   getJSON,
   getJSONProp,
-  getVersions
+  getVersions,
+  removeTrailingSlash,
+  setPath
 };
