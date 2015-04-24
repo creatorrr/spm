@@ -1,5 +1,5 @@
 // Polyfills
-import _fetch from "fetch";
+import _fetch from "whatwg-fetch";
 import _caches from "serviceworker-cache-polyfill";
 
 import co from "co";

@@ -23,7 +23,7 @@ gulp.task('transpile', function () {
 gulp.task('dist', function () {
   var outDir = 'dist',
       builds = {
-        "./src": config.name
+        "./src/spm": config.name
       };
 
   // Make sure the dist directory is clean
@@ -44,7 +44,19 @@ gulp.task('dist', function () {
       outStream = fs.createWriteStream(path, 'utf8'),
 
       bundle = browserify({
-        debug: true
+        debug: true,
+        // HACK: patch process.binding for node-tar to work in browsers
+        insertGlobalVars: {
+          process: function () {
+            return "(function(binding) {" +
+              "var p = require('_process');" +
+              "p.binding = binding;" +
+              "return p;" +
+            "})(function() {" +
+              "return { fs: 'return Error(\"Not available\");' };" +
+            "})";
+          }
+        }
       }).transform(babelify);
 
     if (minify)
