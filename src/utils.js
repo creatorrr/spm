@@ -9,16 +9,37 @@ import zipObject from "lodash/array/zipObject";
 
 const
   removeTrailingSlash = str => str[str.length-1] == '/' ? str.slice(0,str.length-1) : str,
+  getPath = (obj, path) => {
+    let
+      p = removeTrailingSlash(path),
+      separator = '/',
+      keys = p.split(separator),
+
+      // Get reference to deepest key
+      value = reduce(
+        keys,
+        (get, key) => get[key],
+        obj);
+
+    return value;
+  },
+
   setPath = (obj, path, value) => {
     let
       p = removeTrailingSlash(path),
-      keys = p.split('/'),
+      separator = '/',
+      keys = p.split(separator),
+
+      // Get reference to second deepest key
       setter = reduce(
         keys.slice(0, keys.length-1),
         (set, key) => set[key],
         obj),
+
+      // Get deepest key
       key = last(keys);
 
+    // Set value
     setter[key] = value;
     return obj;
   },
@@ -86,6 +107,7 @@ export {
   getJSON,
   getJSONProp,
   getVersions,
+  getPath,
   removeTrailingSlash,
   setPath
 };
