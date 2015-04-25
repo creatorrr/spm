@@ -1,2 +1,5 @@
   • Add package manager opts
   • Add cache manager
+  • Add deduper
+  • Use directed edge graph instead of tree
+  • Check SHAsum
