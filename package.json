@@ -30,12 +30,14 @@
     "arboreal": "git://github.com/creatorrr/arboreal.git#58d71beaefef94ec102aabe81b41b6cd84a2fd6c",
     "browserify-zlib": "^0.1.4",
     "co": "^4.5.1",
+    "co-read": "^0.1.1",
     "highland": "^2.4.0",
     "lodash": "^3.7.0",
     "oboe": "^2.1.1",
     "semver": "^4.3.3",
     "serviceworker-cache-polyfill": "^3.0.0",
     "tar": "^2.1.0",
+    "traverse": "^0.6.6",
     "whatwg-fetch": "^0.7.0",
     "when": "^3.7.2"
   },
@@ -49,6 +51,7 @@
     "gulp-babel": "^5.1.0",
     "mkdirp": "^0.5.0",
     "nodeunit": "^0.9.1",
+    "request": "^2.55.0",
     "rewire": "^2.3.1",
     "rimraf": "^2.3.2",
     "uglifyify": "^3.0.1"

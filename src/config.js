@@ -15,7 +15,7 @@ const
 
       registries: {
         type: "array",
-        default: () => []
+        default: () => ["http://registry.npmjs.org/"]
       }
     }
   });
